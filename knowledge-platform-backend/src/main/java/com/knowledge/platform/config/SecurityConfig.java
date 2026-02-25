@@ -50,7 +50,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+
+        // In production, set ALLOWED_ORIGINS=https://your-app.vercel.app on Railway
+        String originsEnv = System.getenv("ALLOWED_ORIGINS");
+        List<String> origins = (originsEnv != null && !originsEnv.isBlank())
+                ? Arrays.asList(originsEnv.split(","))
+                : List.of("http://localhost:5173", "http://localhost:3000");
+
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
